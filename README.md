@@ -43,7 +43,7 @@ You're going to rent a computer in the cloud (a VPS) from Hostinger. Claude Code
 Dashboard → VPS → Overview:
 - IP address (e.g., 123.45.67.89)
 - Username: `root`
-- SSH Port: 22 (or the value shown, e.g., 2222)
+- SSH Port (e.g., 22 or 2222 — **write this down**, you'll need it in several steps)
 
 ### Step 2: Create Keys
 PowerShell:
@@ -56,16 +56,10 @@ Press Enter twice (no passphrase for simplicity). The `mkdir -Force` creates the
 Creates two files: `hostinger_vps` (private — never share), `hostinger_vps.pub` (public).
 
 ### Step 3: Copy Public Key to VPS
-PowerShell (one command):
+PowerShell (one command). Use the SSH port from Step 1 — if it's 22, you can omit `-p`. If it's something else (like 2222), include `-p YOUR_PORT`:
 
-**Port 22:**
 ```powershell
-type $env:USERPROFILE\.ssh\hostinger_vps.pub | ssh root@YOUR_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys"
-```
-
-**Port 2222:**
-```powershell
-type $env:USERPROFILE\.ssh\hostinger_vps.pub | ssh -p 2222 root@YOUR_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys"
+type $env:USERPROFILE\.ssh\hostinger_vps.pub | ssh -p YOUR_PORT root@YOUR_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys"
 ```
 
 - Type `yes` to accept the host key.
@@ -91,13 +85,13 @@ PowerShell:
 notepad $env:USERPROFILE\.ssh\config
 ```
 
-If notepad asks to create the file, say yes. Paste (edit YOUR_IP):
+If notepad asks to create the file, say yes. Paste (replace YOUR_IP and YOUR_PORT):
 ```
 Host hostinger-vps
     HostName YOUR_IP
     User root
+    Port YOUR_PORT
     IdentityFile ~/.ssh/hostinger_vps
-    # Port 2222  (uncomment if your VPS uses a different port)
 ```
 Save and close.
 
@@ -140,13 +134,13 @@ Back in PowerShell on your PC:
 notepad $env:USERPROFILE\.ssh\config
 ```
 
-Change `User root` to `User greg`:
+Change `User root` to `User greg` (keep the same port):
 ```
 Host hostinger-vps
     HostName YOUR_IP
     User greg
+    Port YOUR_PORT
     IdentityFile ~/.ssh/hostinger_vps
-    # Port 2222  (uncomment if needed)
 ```
 Save.
 
@@ -201,10 +195,11 @@ sudo systemctl restart sshd
 **Test immediately:** Open a **new** PowerShell window → `ssh hostinger-vps`. If it works, you're good. If not, fix it in your existing session.
 
 ### Step 15: Firewall (UFW)
+Use your SSH port from Step 1 (22 or 2222):
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw limit 22/tcp
+sudo ufw limit YOUR_PORT/tcp
 sudo ufw enable
 ```
 Type `y` to confirm.
@@ -229,7 +224,7 @@ banaction = ufw
 
 [sshd]
 enabled  = true
-port     = 22
+port     = YOUR_PORT
 maxretry = 3
 findtime = 900
 bantime  = 14400
@@ -305,7 +300,8 @@ claude
 
 Follow the auth URL it gives you (once). If `claude` isn't found, install manually:
 ```bash
-curl -fsSL https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz | sudo tar -xJ -C /usr/local --strip-components=1
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
 sudo npm install -g @anthropic-ai/claude-code
 claude
 ```
@@ -329,6 +325,9 @@ sudo ufw allow 80/tcp
 Also open port 80 in Hostinger dashboard (hpanel → VPS → Firewall).
 
 Browser: `http://YOUR_IP`
+
+### Pro tip: CLAUDE.md
+Create a file called `CLAUDE.md` in any project folder. Claude Code reads it automatically at the start of every session. Use it for persistent instructions like "always use sudo when needed" or "this project uses Python 3.12." Saves you from repeating yourself.
 
 ***
 
@@ -361,7 +360,7 @@ After completing this guide, your server allows:
 
 | Port | Service | Status |
 |------|---------|--------|
-| 22 | SSH | Rate-limited (ufw limit) |
+| YOUR_PORT | SSH | Rate-limited (ufw limit) |
 | 80 | HTTP | Open (after Phase 6) |
 
 Everything else is blocked. Open more ports only when Claude Code needs them (e.g., `sudo ufw allow 443/tcp` for HTTPS).

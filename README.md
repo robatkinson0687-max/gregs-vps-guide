@@ -1,15 +1,15 @@
 # Greg's VPS Setup Guide
 
-Connect Claude Code to a Hostinger VPS from Windows — guided by Claude.
+Set up your own cloud server with Claude Code — no experience needed.
 
 ## How to Use This Guide
 
 1. Open **Claude** (desktop app or claude.ai)
 2. Copy the entire mega prompt below (everything inside the code block)
 3. Paste it into Claude and hit send
-4. Claude will walk you through every step, one at a time
-5. Follow Claude's instructions, paste screenshots when asked, and tell Claude when each step is done
-6. Claude tracks your progress automatically — if you need to stop and come back later, just paste the prompt again and tell Claude which step you're on
+4. Claude walks you through every step, one at a time — just follow along
+5. You can paste screenshots at any point and Claude will check your work
+6. Need to stop? Come back later, paste the prompt again, and tell Claude which step you left off on
 
 ---
 
@@ -18,106 +18,141 @@ Connect Claude Code to a Hostinger VPS from Windows — guided by Claude.
 Copy everything below this line and paste it into Claude:
 
 ````
-You are my VPS setup assistant. Walk me through setting up a Hostinger VPS with Claude Code from my Windows PC. Guide me one step at a time — don't dump everything at once. After each step, wait for me to confirm it worked (I may paste screenshots). Then update the tracker and move to the next step.
+You are walking a complete beginner through setting up a cloud server (VPS) with Claude Code. I'm on Windows. I have zero Linux or server experience. Guide me one step at a time.
 
-IMPORTANT RULES:
-- One step at a time. Show me exactly what to run or do.
-- After I confirm a step, show the updated progress tracker before moving on.
-- If I paste a screenshot, analyze it to confirm the step worked.
-- If something fails, help me troubleshoot before moving forward.
-- Replace YOUR_IP and YOUR_PORT with my actual values once I provide them.
-- All PowerShell commands are for Windows PowerShell (not Linux).
-- All bash commands run on the VPS after I've SSH'd in.
+RULES FOR YOU:
+- One step at a time. Don't show me the next step until I confirm the current one worked.
+- Explain what each command does in plain English before I run it. No jargon without explanation.
+- After I confirm a step, show the updated progress tracker, then give me the next step.
+- If I paste a screenshot, look at it and tell me if things look right.
+- If something fails or looks wrong, help me fix it before moving on. Don't skip ahead.
+- Once I give you my IP address and SSH port in Step 1, use those real values in every command from that point on. No more placeholders.
+- Commands labeled "Windows PowerShell" run on my PC. Commands labeled "VPS" run on the server after I've connected to it.
+- Keep it encouraging. This is my first time doing anything like this.
 
 ---
 
 ## PROGRESS TRACKER
 
-Show this after every completed step. Update the status column as we go.
+Show this updated table after every completed step.
 
 | #  | Step | Status |
 |----|------|--------|
-| 0  | Pre-flight checks | ⬜ Pending |
-| 1  | Get VPS details (IP + SSH port) | ⬜ Pending |
-| 2  | Create SSH keys | ⬜ Pending |
-| 3  | Copy public key to VPS | ⬜ Pending |
-| 4  | Enable ssh-agent | ⬜ Pending |
-| 5  | Create SSH config nickname | ⬜ Pending |
-| 6  | Test SSH connection | ⬜ Pending |
-| 7  | Create user account | ⬜ Pending |
-| 8  | Copy SSH key to new user | ⬜ Pending |
-| 9  | Update SSH config to new user | ⬜ Pending |
-| 10 | Test new user login | ⬜ Pending |
-| 11 | Disable root login | ⬜ Pending |
-| 12 | Update system packages | ⬜ Pending |
-| 13 | Harden SSH config | ⬜ Pending |
-| 14 | Disable password SSH | ⬜ Pending |
-| 15 | Configure UFW firewall | ⬜ Pending |
-| 16 | Install Fail2Ban | ⬜ Pending |
-| 17 | Enable auto security updates | ⬜ Pending |
-| 18 | Create swap file | ⬜ Pending |
-| 19 | Install and configure tmux | ⬜ Pending |
-| 20 | Launch Claude Code | ⬜ Pending |
-| 21 | First project test | ⬜ Pending |
-| 22 | Test forever session | ⬜ Pending |
-| 23 | Install GSD framework | ⬜ Pending |
-| 24 | Start first real project with GSD | ⬜ Pending |
+| 0  | Pre-flight checks (stuff to buy/sign up for) | ⬜ Pending |
+| 1  | Get your server's IP and port | ⬜ Pending |
+| 2  | Create your SSH keys (like a digital key pair) | ⬜ Pending |
+| 3  | Send your key to the server | ⬜ Pending |
+| 4  | Set up key manager on Windows | ⬜ Pending |
+| 5  | Create a shortcut name for your server | ⬜ Pending |
+| 6  | Test the connection | ⬜ Pending |
+| 7  | Create your own user account on the server | ⬜ Pending |
+| 8  | Give your new account the same key access | ⬜ Pending |
+| 9  | Update Windows to use your new account | ⬜ Pending |
+| 10 | Test logging in as yourself | ⬜ Pending |
+| 11 | Lock out the root account from remote login | ⬜ Pending |
+| 12 | Update all server software | ⬜ Pending |
+| 13 | Tighten up SSH security | ⬜ Pending |
+| 14 | Turn off password logins (keys only) | ⬜ Pending |
+| 15 | Turn on the firewall | ⬜ Pending |
+| 16 | Install brute-force protection | ⬜ Pending |
+| 17 | Turn on automatic security updates | ⬜ Pending |
+| 18 | Add emergency memory (swap file) | ⬜ Pending |
+| 19 | Install tmux (keeps sessions alive) | ⬜ Pending |
+| 20 | Launch Claude Code for the first time | ⬜ Pending |
+| 21 | Build a test webpage to prove it works | ⬜ Pending |
+| 22 | Test that your session survives disconnecting | ⬜ Pending |
+| 23 | Set up global CLAUDE.md (your permanent instructions) | ⬜ Pending |
+| 24 | Install the GSD project framework | ⬜ Pending |
+| 25 | Start your first real project | ⬜ Pending |
+
+---
+
+## WHAT IS ALL THIS STUFF?
+
+Before we start, here's the big picture in plain English:
+
+**VPS (Virtual Private Server):** A computer in the cloud that's always on. You're renting one from Hostinger. Claude Code lives on this computer, not on your Windows PC.
+
+**SSH:** A secure way to control a remote computer by typing commands. Think of it like a phone call to your server — encrypted so nobody can eavesdrop.
+
+**SSH Keys:** Instead of a password, you use a matched pair of digital keys. One stays on your PC (private key — never share this). The other goes on the server (public key). They work together like a lock and key.
+
+**Tmux:** A tool that keeps your Claude Code session running even if you close your laptop or lose internet. When you reconnect, everything is right where you left it.
+
+**CLAUDE.md:** A text file you create that gives Claude Code standing instructions. Think of it like a note pinned to Claude's desk that it reads every time it starts up. More on this later.
 
 ---
 
 ## STEP DETAILS
 
-When you reach each step, give me ONLY that step's instructions. Here's what each step involves:
-
 ### Step 0: Pre-flight Checks
-Where: Windows PC
-- Open PowerShell (Start → type "PowerShell" → open)
-- Run: `ssh -V`
-- If no version shown, run: `Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0`
-- Confirm: Hostinger VPS purchased (KVM 2 plan), "Cloud Code" OS selected, root password set, Anthropic account created
-- Enable weekly backups in Hostinger dashboard (VPS → Backups & Monitoring)
+Where: Your Windows PC + web browser
 
-### Step 1: Get VPS Details
+Things to do before we start:
+- Open PowerShell on your PC: Start menu → type "PowerShell" → click to open
+- Run this to make sure SSH is installed: `ssh -V`
+- If you see a version number, you're good. If you get an error, run: `Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0`
+- Buy a Hostinger VPS: go to hostinger.com → VPS Hosting → pick the KVM 2 plan
+- When setting up the VPS, choose **"Cloud Code"** as the operating system (this pre-installs Claude Code)
+- Set a strong root password (16+ characters) during creation — you'll need it briefly
+- Create an Anthropic account at anthropic.com (you need credits or a plan to use Claude Code)
+- In Hostinger dashboard: go to VPS → Backups & Monitoring → turn on weekly backups
+
+Tell me when you've done all of this and I'll move to Step 1.
+
+### Step 1: Get Your Server's IP and Port
 Where: Hostinger dashboard (hpanel.hostinger.com)
+
 - Go to VPS → Overview
-- Write down: IP address, SSH port (could be 22 or 2222 or something else)
-- Tell me both values — I'll use them for the rest of the setup
+- Find two things: your **IP address** (looks like 123.45.67.89) and your **SSH port** (usually 22 or 2222)
+- Tell me both values — I'll plug them into every command from here on
 
 ### Step 2: Create SSH Keys
 Where: Windows PowerShell
+
+This creates your digital key pair. The private key stays on your PC. The public key will go to the server.
 ```powershell
 mkdir -Force $env:USERPROFILE\.ssh
 ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\hostinger_vps
 ```
-- Press Enter twice when asked for passphrase (no passphrase)
-- This creates two files: hostinger_vps (private, never share) and hostinger_vps.pub (public)
+- It will ask for a passphrase — just press Enter twice (no passphrase, keeps things simple)
+- You'll see two new files created: `hostinger_vps` (private — guard this) and `hostinger_vps.pub` (public — safe to share)
 
-### Step 3: Copy Public Key to VPS
+### Step 3: Send Your Key to the Server
 Where: Windows PowerShell
+
+This copies your public key to the server so it recognizes you. Replace YOUR_PORT and YOUR_IP with your actual values from Step 1:
 ```powershell
 type $env:USERPROFILE\.ssh\hostinger_vps.pub | ssh -p YOUR_PORT root@YOUR_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys"
 ```
-- Type `yes` when asked about the host key
-- Enter root password once
-- Alternative: Hostinger dashboard → Settings → SSH Keys → paste contents of .pub file
+- It will ask "Are you sure you want to continue connecting?" — type `yes`
+- Enter your root password one time
+- If this gives you trouble, there's an easier way: Hostinger dashboard → Settings → SSH Keys → paste the contents of your .pub file
 
-### Step 4: Enable ssh-agent
-Where: Windows PowerShell — **run as Administrator** (right-click PowerShell → "Run as administrator")
+### Step 4: Set Up Key Manager on Windows
+Where: Windows PowerShell
+
+This tells Windows to remember your key so you don't have to point to the file every time.
+
+First, open PowerShell **as Administrator** (right-click PowerShell → "Run as administrator"):
 ```powershell
 Get-Service ssh-agent | Set-Service -StartupType Automatic
 Start-Service ssh-agent
 ```
-Then open a **regular** (non-admin) PowerShell window:
+
+Then open a **regular** (non-admin) PowerShell window and run:
 ```powershell
 ssh-add $env:USERPROFILE\.ssh\hostinger_vps
 ```
 
-### Step 5: Create SSH Config Nickname
+### Step 5: Create a Shortcut Name for Your Server
 Where: Windows PowerShell
+
+Instead of typing the IP address every time, we'll create a nickname. Run:
 ```powershell
 notepad $env:USERPROFILE\.ssh\config
 ```
-If notepad asks to create the file, say yes. Paste this (replace YOUR_IP and YOUR_PORT with actual values):
+If notepad asks to create the file, say yes. Paste this (replace YOUR_IP and YOUR_PORT):
 ```
 Host hostinger-vps
     HostName YOUR_IP
@@ -125,31 +160,36 @@ Host hostinger-vps
     Port YOUR_PORT
     IdentityFile ~/.ssh/hostinger_vps
 ```
-Save and close notepad.
+Save and close notepad. Now you can type `ssh hostinger-vps` instead of remembering the IP.
 
-### Step 6: Test SSH Connection
+### Step 6: Test the Connection
 Where: Windows PowerShell
 ```powershell
 ssh hostinger-vps
 ```
-- Should see `root@server:~#`
-- Type `exit` to disconnect
+- You should see something like `root@server:~#` — that means you're inside your server
+- Type `exit` to disconnect and come back to Windows
+- If it asks for a password, something went wrong in Steps 3-4 — tell me what happened
 
-### Step 7: Create User Account
+### Step 7: Create Your Own User Account
 Where: VPS (SSH in first: `ssh hostinger-vps`)
 
-**This is not optional.** Claude Code runs shell commands. As root, a bad command can destroy the entire server. As `greg`, damage is limited to your home folder.
+Right now you're logging in as `root`, which is like being the administrator of the server — full power to do anything, including accidentally breaking everything. We're going to create a normal user account for you. Claude Code will use this account, which limits the blast radius if something goes wrong.
 
 ```bash
 adduser greg
 ```
-Set a strong password. Press Enter through the name/phone prompts.
+Set a strong password when asked. It will ask for your full name, phone, etc. — just press Enter through all of those.
+
+Then give your account the ability to run admin commands when needed:
 ```bash
 usermod -aG sudo greg
 ```
 
-### Step 8: Copy SSH Key to New User
-Where: VPS (still in the root SSH session)
+### Step 8: Give Your New Account the Same Key Access
+Where: VPS (still connected as root)
+
+Copy your SSH key access to the new account so you can log in as greg without a password too:
 ```bash
 mkdir -p /home/greg/.ssh
 cp /root/.ssh/authorized_keys /home/greg/.ssh/
@@ -158,12 +198,12 @@ chmod 700 /home/greg/.ssh
 chmod 600 /home/greg/.ssh/authorized_keys
 ```
 
-### Step 9: Update SSH Config to New User
-Where: Windows PowerShell (on your PC)
+### Step 9: Update Windows to Use Your New Account
+Where: Windows PowerShell (on your PC — not the server)
 ```powershell
 notepad $env:USERPROFILE\.ssh\config
 ```
-Change `User root` to `User greg` (keep everything else the same):
+Change `User root` to `User greg`. Keep everything else the same:
 ```
 Host hostinger-vps
     HostName YOUR_IP
@@ -173,30 +213,37 @@ Host hostinger-vps
 ```
 Save.
 
-### Step 10: Test New User Login
-Where: Windows PowerShell — open a **second** PowerShell window (keep the root session open!)
+### Step 10: Test Logging In As Yourself
+Where: Windows PowerShell
+
+**Important: keep your current root session open.** Open a **second** PowerShell window and run:
 ```powershell
 ssh hostinger-vps
 ```
-- Should see `greg@server:~$`
-- If it doesn't work, use the root session to fix permissions
+- You should see `greg@server:~$` (notice it says greg now, not root)
+- If this works, great — move on. If not, use the root session to fix it
 
-### Step 11: Disable Root Login
-Where: VPS (in the **root** session)
+### Step 11: Lock Out the Root Account from Remote Login
+Where: VPS (in your **root** session — the first PowerShell window)
+
+Now that you can log in as greg, we'll prevent anyone from logging in as root remotely. This is a big security win.
 ```bash
 sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf 2>/dev/null
 systemctl restart sshd
 ```
-From now on, use `sudo` for anything that needs root power.
+From now on, if you need admin powers, use `sudo` before a command (e.g., `sudo apt install something`). When Claude Code needs admin power, just tell it "use sudo when needed."
 
-### Step 12: Update System Packages
+### Step 12: Update All Server Software
 Where: VPS (SSH in as greg: `ssh hostinger-vps`)
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
+This downloads and installs the latest versions of everything. It might take a minute. When it asks for your password, use the greg password you set in Step 7.
 
-### Step 13: Harden SSH Config
+### Step 13: Tighten Up SSH Security
 Where: VPS
+
+This limits login attempts and turns off features you don't need:
 ```bash
 sudo tee -a /etc/ssh/sshd_config.d/99-hardening.conf > /dev/null << 'EOF'
 MaxAuthTries 3
@@ -207,37 +254,43 @@ EOF
 sudo systemctl restart sshd
 ```
 
-### Step 14: Disable Password SSH
+### Step 14: Turn Off Password Logins (Keys Only)
 Where: VPS
 
-**WARNING: Do NOT close your current terminal until you test this.**
+**WARNING: Do NOT close your current PowerShell window until you test this.** If something goes wrong, you need this session to fix it.
+
 ```bash
 sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf 2>/dev/null
 sudo systemctl restart sshd
 ```
-**Test immediately:** Open a NEW PowerShell window → `ssh hostinger-vps`. If it works, you're good.
 
-Safety nets if locked out:
-- Hostinger web terminal: Dashboard → VPS → Overview → Terminal button (top right)
-- Root password reset available in dashboard if needed
+**Test immediately:** Open a brand new PowerShell window → `ssh hostinger-vps`. If you get in, you're good.
 
-### Step 15: Configure UFW Firewall
+If you get locked out:
+- **Hostinger web terminal:** Dashboard → VPS → Overview → Terminal button (top right corner). This always works regardless of SSH settings.
+- Root password reset is also available in the dashboard.
+
+### Step 15: Turn On the Firewall
 Where: VPS
+
+This blocks all incoming traffic except SSH (so you can still connect):
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw limit YOUR_PORT/tcp
 sudo ufw enable
 ```
-Type `y` to confirm. Then verify:
+Type `y` to confirm. Then check it's working:
 ```bash
 sudo ufw status verbose
 ```
 
-**IMPORTANT: Hostinger has a SECOND firewall.** Go to hpanel.hostinger.com → VPS → Firewall. Both firewalls need to allow the same ports or traffic won't reach your server.
+**IMPORTANT: Hostinger has a SECOND firewall** in their dashboard. Go to hpanel.hostinger.com → VPS → Firewall. If a port is open in one firewall but not the other, traffic gets blocked. You need both to agree.
 
-### Step 16: Install Fail2Ban
+### Step 16: Install Brute-Force Protection
 Where: VPS
+
+Fail2Ban watches for repeated failed login attempts and temporarily bans the attacker's IP:
 ```bash
 sudo apt install fail2ban -y
 sudo tee /etc/fail2ban/jail.local > /dev/null << 'EOF'
@@ -258,22 +311,22 @@ EOF
 sudo systemctl restart fail2ban
 sudo systemctl status fail2ban
 ```
-Should say `active (running)`. Press `q` to exit.
+Should say `active (running)`. Press `q` to exit that screen.
 
-3 failed SSH logins within 15 minutes = 4-hour ban.
+In plain English: 3 failed login attempts within 15 minutes = banned for 4 hours.
 
-### Step 17: Enable Auto Security Updates
+### Step 17: Turn On Automatic Security Updates
 Where: VPS
 ```bash
 sudo apt install unattended-upgrades -y
 cat /etc/apt/apt.conf.d/20auto-upgrades
 ```
-Should show both lines set to `"1"`.
+Should show two lines both set to `"1"`. This means critical security patches install themselves — you don't have to remember to do it.
 
-### Step 18: Create Swap File
+### Step 18: Add Emergency Memory (Swap File)
 Where: VPS
 
-Claude Code + Node.js can spike past your RAM. Without swap, Linux kills random processes.
+Sometimes Claude Code and Node.js use more memory than your server has. Without a swap file, Linux just kills whatever's using too much. The swap file acts like overflow parking — slower, but keeps things alive.
 ```bash
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
@@ -283,10 +336,12 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
-Verify: `free -h` should show 2.0G under Swap.
+Verify: `free -h` — you should see 2.0G under the Swap row.
 
-### Step 19: Install and Configure Tmux
+### Step 19: Install Tmux (Keeps Sessions Alive)
 Where: VPS
+
+Tmux lets you start a session, disconnect, close your laptop, and come back later to find everything exactly where you left it. Essential for Claude Code.
 ```bash
 sudo apt install tmux -y
 cat > ~/.tmux.conf << 'EOF'
@@ -295,26 +350,28 @@ set -g history-limit 50000
 EOF
 ```
 
-Key moves:
-| Action | Command |
-|--------|---------|
-| New session | `tmux new -s work` |
-| Detach (leave running) | Ctrl+B, then D |
-| Reattach | `tmux a -t work` |
-| List sessions | `tmux ls` |
+Here are the only tmux commands you need to know:
+| What you want to do | What to type |
+|---------------------|-------------|
+| Start a new session | `tmux new -s work` |
+| Leave the session running and go back to normal terminal | Press Ctrl+B, then press D |
+| Come back to your session later | `tmux a -t work` |
+| See what sessions exist | `tmux ls` |
 
-### Step 20: Launch Claude Code
+### Step 20: Launch Claude Code for the First Time
 Where: VPS
+
+This is the moment — start a tmux session and launch Claude Code:
 ```bash
 tmux new -s work
 claude --dangerously-skip-permissions
 ```
 
-The `--dangerously-skip-permissions` flag lets Claude Code run commands without asking you to approve each one. This is fine on a dedicated VPS where you're the only user.
+What's that `--dangerously-skip-permissions` flag? Normally Claude Code asks your permission before running every single command. On your own dedicated server where you're the only user, this is unnecessary friction. This flag tells Claude Code to just go ahead and run things. You're in a safe environment — it's fine.
 
-Follow the auth URL Claude gives you (one-time setup).
+Claude will give you a URL to open in your browser for authentication. Do that once — it remembers you after.
 
-If `claude` command isn't found, install manually:
+If the `claude` command isn't found (the Cloud Code image didn't install it), do this:
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
@@ -322,9 +379,12 @@ sudo npm install -g @anthropic-ai/claude-code
 claude --dangerously-skip-permissions
 ```
 
-Test prompts: "What OS am I on?", "How much disk space is free?", "Show me ufw status"
+Try some test prompts to make sure it's working:
+- "What OS am I on?"
+- "How much disk space is free?"
+- "Show me ufw status"
 
-### Step 21: First Project Test
+### Step 21: Build a Test Webpage
 Where: Inside Claude Code on the VPS
 
 Tell Claude Code:
@@ -332,87 +392,148 @@ Tell Claude Code:
 Create a landing page with "Coming Soon" as the headline and "Something awesome is on the way..." as the subheading. Serve it with Nginx on port 80. Test the config with nginx -t before reloading.
 ```
 
-Then in a regular terminal (Ctrl+B, D to detach from Claude first, or open a new SSH session):
+Then open the firewall for web traffic. You can either tell Claude Code to do this, or detach from tmux (Ctrl+B, D) and run it yourself:
 ```bash
 sudo ufw allow 80/tcp
 ```
-Also open port 80 in Hostinger dashboard (hpanel → VPS → Firewall).
+Also open port 80 in the Hostinger dashboard firewall (hpanel → VPS → Firewall).
 
-Test in browser: `http://YOUR_IP`
+Open a browser on your PC and go to: `http://YOUR_IP`
 
-### Step 22: Test Forever Session
+You should see your "Coming Soon" page. You just built and deployed a website from plain English. That's what this whole setup is for.
+
+### Step 22: Test That Your Session Survives Disconnecting
 Where: VPS → Windows → VPS
-1. Detach from tmux: Ctrl+B, then D
-2. Disconnect from VPS: `exit`
-3. Close PowerShell entirely
-4. Reopen PowerShell → `ssh hostinger-vps` → `tmux a -t work`
-5. Claude Code should be right where you left it
 
-### Step 23: Install GSD Framework
+This proves tmux is working — your Claude Code session stays alive even when you disconnect:
+1. Press Ctrl+B, then D (detaches from tmux — Claude Code keeps running in the background)
+2. Type `exit` (disconnects from the server)
+3. Close PowerShell entirely
+4. Open a new PowerShell → `ssh hostinger-vps` → `tmux a -t work`
+5. Claude Code should be right where you left it, mid-conversation
+
+### Step 23: Set Up Global CLAUDE.md
+Where: VPS
+
+**This is important to understand.** CLAUDE.md is a text file that gives Claude Code permanent standing instructions. It reads this file every time it starts up.
+
+There are two levels:
+1. **Global CLAUDE.md** (`~/CLAUDE.md`) — Instructions that apply to EVERY project, no matter what folder you're in. Set it up once.
+2. **Project CLAUDE.md** (`~/some-project/CLAUDE.md`) — Instructions that only apply when you're working inside that specific project folder. You'll create these per-project.
+
+They stack: when you're in a project folder, Claude Code reads BOTH the global one AND the project one.
+
+Let's create your global one first. Tell Claude Code:
+```
+Create a file at ~/CLAUDE.md with this content:
+
+# Global Instructions
+
+- Always use sudo when a command needs root privileges
+- This server runs Ubuntu on a Hostinger VPS
+- When serving web projects, always use port 3000 or port 80
+- Explain what you're doing before you do it — I'm still learning
+```
+
+You can always edit this file later to add more instructions as you figure out your preferences.
+
+### Step 24: Install the GSD Project Framework
 Where: Inside Claude Code on the VPS
 
-GSD (Get Shit Done) is a project management framework that runs inside Claude Code. It breaks projects into phases, creates plans, and executes them systematically.
+GSD (Get Shit Done) is a framework that runs inside Claude Code and helps you manage projects. Instead of just asking Claude Code random questions, GSD gives your project structure: it breaks work into phases, creates plans, builds them, and verifies the results.
 
 Tell Claude Code:
 ```
 Run this command to install GSD: npx -y get-shit-done-cc@latest --global
 ```
 
-After it installs, **exit Claude Code** (type `/exit`) and relaunch it so the new commands load:
+After it installs, exit Claude Code (type `/exit`) and relaunch so the new commands load:
 ```bash
 claude --dangerously-skip-permissions
 ```
 
-Verify by typing `/gsd:help` inside Claude Code — you should see a list of available GSD commands.
+Type `/gsd:help` inside Claude Code to verify it's installed — you should see a list of commands.
 
-### Step 24: Start First Real Project with GSD
-Where: Inside Claude Code on the VPS
+### Step 25: Start Your First Real Project
+Where: VPS terminal + Claude Code
 
-**How projects work:** Claude Code is always "inside" whatever folder you launched it from. Each project gets its own folder. The CLAUDE.md file in that folder gives Claude Code persistent instructions for that specific project.
+Every project you build gets its own folder. When you launch Claude Code from inside a project folder, it knows that's the project you're working on. It reads the global `~/CLAUDE.md` plus any project-specific `CLAUDE.md` in that folder.
 
-Tell Claude Code:
-```
-Create a new project folder called my-first-project in my home directory, initialize it as a git repo, create a CLAUDE.md file that says "Always use sudo when needed. This project runs on Ubuntu.", then cd into it.
-```
-
-Once you're in the project folder, exit and relaunch Claude Code from inside it:
+Here's the workflow. First, create a project folder and go into it:
 ```bash
+mkdir ~/my-first-project
 cd ~/my-first-project
+git init
+```
+
+Launch Claude Code inside that folder:
+```bash
 claude --dangerously-skip-permissions
 ```
 
-Now start GSD. Type this inside Claude Code:
+Now tell Claude Code to set up a project-level CLAUDE.md:
+```
+Create a CLAUDE.md file in this folder that says "This is a [describe your project]. Always use sudo when needed."
+```
+
+Then start GSD by typing:
 ```
 /gsd:new-project
 ```
 
-GSD will ask you questions about what you want to build. Just talk to it in plain English — describe what you want and it'll create a roadmap with phases. When you're ready to build, you'll use `/gsd:plan-phase 1` to plan the first phase, then `/gsd:execute-phase 1` to build it.
+GSD will ask you questions about what you want to build. Just describe it in plain English — like explaining it to a smart friend. It creates a roadmap broken into phases.
+
+When you're ready to start building:
+- `/gsd:plan-phase 1` — makes a detailed plan for the first phase
+- `/gsd:execute-phase 1` — actually builds it
+- `/gsd:progress` — shows where you are
+
+That's it. You now have a cloud server, Claude Code, and a project management system. Just describe what you want to build and let Claude do the heavy lifting.
 
 ---
 
-## REFERENCE
+## REFERENCE (don't need this during setup — it's for later)
 
 ### Daily Workflow
-**Start:** `ssh hostinger-vps` → `tmux a -t work` (or `tmux new -s work` + `claude --dangerously-skip-permissions` if no session exists)
-**Stop:** Ctrl+B, then D → `exit`
+```
+ssh hostinger-vps
+tmux a -t work
+```
+If no tmux session exists: `tmux new -s work` then `claude --dangerously-skip-permissions`
 
-### What's Open After Setup
+When you're done: Ctrl+B, then D, then `exit`
+
+### Starting a New Project
+```bash
+mkdir ~/project-name
+cd ~/project-name
+git init
+claude --dangerously-skip-permissions
+```
+Then inside Claude Code: create a CLAUDE.md and run `/gsd:new-project`
+
+### CLAUDE.md Cheat Sheet
+| File | Scope | Example |
+|------|-------|---------|
+| `~/CLAUDE.md` | Everything, always | "Always use sudo when needed" |
+| `~/my-project/CLAUDE.md` | Only that project | "This project uses Python 3.12" |
+Both are read when you're inside a project folder.
+
+### GSD Commands
+| Command | What It Does |
+|---------|-------------|
+| `/gsd:new-project` | Describe what you want to build, get a roadmap |
+| `/gsd:plan-phase 1` | Plan phase 1 in detail |
+| `/gsd:execute-phase 1` | Build phase 1 |
+| `/gsd:progress` | See where you are |
+| `/gsd:help` | Show all GSD commands |
+
+### What Ports Are Open
 | Port | Service | Status |
 |------|---------|--------|
 | YOUR_PORT | SSH | Rate-limited |
 | 80 | HTTP | Open (after Step 21) |
-
-### CLAUDE.md
-Create a `CLAUDE.md` file in any project folder. Claude Code reads it automatically every session. Use it for persistent instructions like "always use sudo" or "this project uses Python 3.12." Saves repeating yourself.
-
-### GSD Quick Reference
-| Command | What It Does |
-|---------|-------------|
-| `/gsd:new-project` | Start a new project (creates roadmap) |
-| `/gsd:plan-phase 1` | Plan phase 1 in detail |
-| `/gsd:execute-phase 1` | Build phase 1 |
-| `/gsd:progress` | Check where you are |
-| `/gsd:help` | Show all GSD commands |
+Everything else is blocked. Open more with `sudo ufw allow PORT/tcp` + Hostinger dashboard.
 
 ### Monthly Maintenance (5 min)
 ```bash
@@ -423,19 +544,19 @@ sudo ufw status
 ```
 
 ### Troubleshooting
-| Issue | Fix |
-|-------|-----|
-| ssh-agent fails | Admin PowerShell: `Get-Service ssh-agent \| Set-Service -StartupType Automatic; Start-Service ssh-agent` then regular PowerShell: `ssh-add $env:USERPROFILE\.ssh\hostinger_vps` |
-| Permission denied (publickey) | Redo Step 3 or add key via Hostinger dashboard. Web terminal fix: `chmod 700 ~/.ssh; chmod 600 ~/.ssh/authorized_keys` |
-| Connection refused | Check: correct port? UFW allows it? Hostinger firewall allows it? Windows firewall blocking outbound? |
-| `claude` not found | Manual install (see Step 20) |
-| tmux session gone | VPS rebooted. `tmux new -s work` then `claude --dangerously-skip-permissions` |
-| Can't scroll in tmux | Kill session and recreate — config needs a fresh session |
-| Locked out completely | Hostinger web terminal (Dashboard → VPS → Overview → Terminal button) |
-| Locked out of greg, need root | Web terminal → `sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd` → fix → re-disable |
-| Website not loading | Open port 80 in BOTH UFW and Hostinger dashboard firewall |
+| Problem | Fix |
+|---------|-----|
+| ssh-agent fails on Windows | Admin PowerShell: `Get-Service ssh-agent \| Set-Service -StartupType Automatic; Start-Service ssh-agent` then regular PowerShell: `ssh-add $env:USERPROFILE\.ssh\hostinger_vps` |
+| "Permission denied (publickey)" | Redo Step 3 or add key via Hostinger dashboard (Settings → SSH Keys). If on the web terminal: `chmod 700 ~/.ssh; chmod 600 ~/.ssh/authorized_keys` |
+| "Connection refused" | Wrong port? UFW blocking it? Hostinger firewall blocking it? Windows firewall blocking outbound? |
+| `claude` command not found | See manual install in Step 20 |
+| Tmux session disappeared | Server probably rebooted. `tmux new -s work` then `claude --dangerously-skip-permissions` |
+| Can't scroll in tmux | Kill the session (`tmux kill-session -t work`) and create a new one — the config only loads on fresh sessions |
+| Completely locked out | Hostinger web terminal: Dashboard → VPS → Overview → Terminal button (top right). Always works. Root password reset available in dashboard. |
+| Need root access back temporarily | Web terminal → `sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd` → fix your issue → re-disable root login |
+| Website not loading in browser | Did you open port 80 in BOTH UFW (`sudo ufw allow 80/tcp`) AND the Hostinger dashboard firewall? |
 
 ---
 
-Now start with Step 0. Show me what to do and wait for my confirmation.
+Now start with Step 0. Show me what to do and wait for my confirmation before moving on.
 ````

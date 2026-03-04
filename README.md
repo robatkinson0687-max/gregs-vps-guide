@@ -26,7 +26,9 @@ RULES FOR YOU:
 - After I confirm a step, show the updated progress tracker, then give me the next step.
 - If I paste a screenshot, look at it and tell me if things look right.
 - If something fails or looks wrong, help me fix it before moving on. Don't skip ahead.
+- If something fails, ask me to run the failed command again and show you the exact error output (or paste a screenshot). Diagnose what went wrong before suggesting a fix — don't guess.
 - Once I give you my IP address and SSH port in Step 1, use those real values in every command from that point on. No more placeholders.
+- If any step says something "already exists" or gives unexpected output, ask me to show you what it says — the Hostinger Cloud Code image may have pre-configured some things.
 - Commands labeled "Windows PowerShell" run on my PC. Commands labeled "VPS" run on the server after I've connected to it.
 - Keep it encouraging. This is my first time doing anything like this.
 
@@ -95,7 +97,7 @@ Things to do before we start:
 - Buy a Hostinger VPS: go to hostinger.com → VPS Hosting → pick the KVM 2 plan
 - When setting up the VPS, choose **"Cloud Code"** as the operating system (this pre-installs Claude Code)
 - Set a strong root password (16+ characters) during creation — you'll need it briefly
-- Create an Anthropic account at anthropic.com (you need credits or a plan to use Claude Code)
+- Create an Anthropic account at anthropic.com (you need credits or a plan to use Claude Code). Check your usage and billing at console.anthropic.com — Claude Code stops working when credits run out, so keep an eye on it
 - In Hostinger dashboard: go to VPS → Backups & Monitoring → turn on weekly backups
 
 Tell me when you've done all of this and I'll move to Step 1.
@@ -119,15 +121,26 @@ ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\hostinger_vps
 - You'll see two new files created: `hostinger_vps` (private — guard this) and `hostinger_vps.pub` (public — safe to share)
 
 ### Step 3: Send Your Key to the Server
-Where: Windows PowerShell
+Where: Windows PowerShell + Hostinger Dashboard
 
-This copies your public key to the server so it recognizes you. Replace YOUR_PORT and YOUR_IP with your actual values from Step 1:
+This copies your public key to the server so it recognizes you. We'll use the **easiest method first** (the dashboard), with a command-line backup if needed.
+
+**Method A — Dashboard (recommended):**
+1. In PowerShell, run this to display your public key:
+   ```powershell
+   type $env:USERPROFILE\.ssh\hostinger_vps.pub
+   ```
+2. Copy the entire output (starts with `ssh-ed25519`)
+3. Go to Hostinger dashboard → VPS → Settings → SSH Keys
+4. Paste your key there and save
+
+**Method B — Command line (if the dashboard option isn't available):**
+Replace YOUR_PORT and YOUR_IP with your actual values from Step 1:
 ```powershell
 type $env:USERPROFILE\.ssh\hostinger_vps.pub | ssh -p YOUR_PORT root@YOUR_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys"
 ```
 - It will ask "Are you sure you want to continue connecting?" — type `yes`
 - Enter your root password one time
-- If this gives you trouble, there's an easier way: Hostinger dashboard → Settings → SSH Keys → paste the contents of your .pub file
 
 ### Step 4: Set Up Key Manager on Windows
 Where: Windows PowerShell
@@ -144,6 +157,8 @@ Then open a **regular** (non-admin) PowerShell window and run:
 ```powershell
 ssh-add $env:USERPROFILE\.ssh\hostinger_vps
 ```
+
+**If ssh-agent gives you trouble, don't panic.** The SSH config file we create in Step 5 points directly to your key file (`IdentityFile`), so connections will still work without ssh-agent. It's a convenience, not a requirement.
 
 ### Step 5: Create a Shortcut Name for Your Server
 Where: Windows PowerShell
@@ -266,6 +281,12 @@ sudo systemctl restart sshd
 
 **Test immediately:** Open a brand new PowerShell window → `ssh hostinger-vps`. If you get in, you're good.
 
+**Verify no other config file is overriding this:** Run this to check:
+```bash
+sudo grep -r PasswordAuthentication /etc/ssh/
+```
+Every line should say `no`. If any file still says `yes`, tell me which file and I'll help you fix it. (Hostinger's Cloud Code image sometimes has drop-in config files that override the main setting.)
+
 If you get locked out:
 - **Hostinger web terminal:** Dashboard → VPS → Overview → Terminal button (top right corner). This always works regardless of SSH settings.
 - Root password reset is also available in the dashboard.
@@ -367,7 +388,9 @@ tmux new -s work
 claude --dangerously-skip-permissions
 ```
 
-What's that `--dangerously-skip-permissions` flag? Normally Claude Code asks your permission before running every single command. On your own dedicated server where you're the only user, this is unnecessary friction. This flag tells Claude Code to just go ahead and run things. You're in a safe environment — it's fine.
+What's that `--dangerously-skip-permissions` flag? Normally Claude Code asks your permission before running every single command. On your own dedicated server where you're the only user, this is unnecessary friction. This flag tells Claude Code to just go ahead and run things. You're in a safe environment.
+
+**One thing to know:** With this flag, Claude Code won't ask before running commands. So read what it says it's about to do before you hit enter. If it says something like "I'm going to delete..." or "I'm going to modify your SSH config..." — make sure that's actually what you want. We'll add safety rails in the CLAUDE.md file (Step 23) to prevent the worst-case scenarios.
 
 Claude will give you a URL to open in your browser for authentication. Do that once — it remembers you after.
 
@@ -429,6 +452,12 @@ Create a file at ~/CLAUDE.md with this content:
 
 # Global Instructions
 
+## Safety Rules
+- NEVER delete system files, modify SSH config, or change firewall rules without explaining exactly what you're about to do and waiting for my confirmation
+- NEVER run rm -rf on system directories
+- Before any destructive operation (deleting files, overwriting configs, killing processes), tell me what you're about to do and why
+
+## How I Work
 - Always use sudo when a command needs root privileges
 - This server runs Ubuntu on a Hostinger VPS
 - When serving web projects, always use port 3000 or port 80
@@ -503,6 +532,12 @@ If no tmux session exists: `tmux new -s work` then `claude --dangerously-skip-pe
 
 When you're done: Ctrl+B, then D, then `exit`
 
+### Restarting Claude Code
+If Claude Code freezes, crashes, or you need a fresh start:
+- Type `/exit` or press Ctrl+C to quit
+- Then run `claude --dangerously-skip-permissions` to start it again
+- Your tmux session stays alive — only Claude Code restarts
+
 ### Starting a New Project
 ```bash
 mkdir ~/project-name
@@ -555,6 +590,7 @@ sudo ufw status
 | Completely locked out | Hostinger web terminal: Dashboard → VPS → Overview → Terminal button (top right). Always works. Root password reset available in dashboard. |
 | Need root access back temporarily | Web terminal → `sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd` → fix your issue → re-disable root login |
 | Website not loading in browser | Did you open port 80 in BOTH UFW (`sudo ufw allow 80/tcp`) AND the Hostinger dashboard firewall? |
+| Claude Code stopped responding or won't start | Check your Anthropic credits at console.anthropic.com. Also try: `/exit` or Ctrl+C, then `claude --dangerously-skip-permissions` |
 
 ---
 
